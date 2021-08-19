@@ -4,6 +4,8 @@ Copyright Gabriel Pery 2021
 
 from pytube import YouTube
 import tkinter as tk
+from threading import Thread
+from tkinter import ttk
 import os, sys, subprocess, getpass, logging
 
 
@@ -39,7 +41,7 @@ def downloadMP4(entry, warningLabel, successLabel):
         ys.download(f'C:\\Users\\{username}\\Downloads\\')
         successLabel.pack()
         entry.select_range(0, 'end')
-        
+
     except Exception as e:
         logging.error(e)
         warningLabel.pack()
@@ -55,7 +57,7 @@ def downloadMP3(entry, warningLabel, successLabel):
         username = getpass.getuser()
         yt = YouTube(url)
         ys = yt.streams.get_audio_only()
-        name = ys.title
+        name = os.path.splitext(ys.default_filename)[0]
 
         ys.download(f'C:\\Users\\{username}\\AppData\\Local\\YoutubeDownloader\\temp\\')
         
@@ -71,12 +73,25 @@ def downloadMP3(entry, warningLabel, successLabel):
         warningLabel.pack()
         
 
-def gui():
+# threads
 
+
+def startMP4Thread(entry, warningLabel, successLabel):
+    mp4Thread = Thread(target = lambda : downloadMP4(entry, warningLabel, successLabel))
+    mp4Thread.daemon = True
+    mp4Thread.start()
+
+def startMP3Thread(entry, warningLabel, successLabel):
+    mp3Thread = Thread(target = lambda : downloadMP3(entry, warningLabel, successLabel))
+    mp3Thread.daemon = True
+    mp3Thread.start()
+
+
+def gui():
     window = tk.Tk()
 
     window.title('YouTube Converter')
-    window.geometry('500x160')
+    window.geometry('500x165')
 
     iconPath = resource_path('icon.png')
     icon = tk.PhotoImage(file=iconPath)
@@ -91,6 +106,9 @@ def gui():
     successLabel = tk.Label(text='Download successful', background='white', font='bebasneue')
 
 
+    frame = ttk.Frame(window)
+    frame.pack()
+
     mp4Button = tk.Button(
     text="Convert to MP4",
     width=13,
@@ -98,7 +116,7 @@ def gui():
     bg="light gray",
     fg="black",
     font='bebasneue',
-    command = lambda : downloadMP4(entry, warningLabel, successLabel)
+    command = lambda : startMP4Thread(entry, warningLabel, successLabel)
     )   
 
     mp3Button = tk.Button(
@@ -108,7 +126,7 @@ def gui():
     bg="light gray",
     fg="black",
     font='bebasneue',
-    command = lambda : downloadMP3(entry, warningLabel, successLabel)
+    command = lambda : startMP3Thread(entry, warningLabel, successLabel)
     )   
 
 
@@ -123,4 +141,4 @@ def gui():
 try:
     gui()
 except Exception as e: 
-    logging.error(e)
+    logging.error(e) # logs any errors that happen on startup
