@@ -38,6 +38,8 @@ def downloadMP4(entry, warningLabel, successLabel):
 
         ys.download(f'C:\\Users\\{username}\\Downloads\\')
         successLabel.pack()
+        entry.select_range(0, 'end')
+        
     except Exception as e:
         logging.error(e)
         warningLabel.pack()
@@ -62,6 +64,7 @@ def downloadMP3(entry, warningLabel, successLabel):
         convertToMp3(name, mp4Path)
         os.remove(mp4Path)
         successLabel.pack()
+        entry.select_range(0, 'end')
 
     except Exception as e:
         logging.error(e)
