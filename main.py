@@ -9,7 +9,9 @@ from tkinter import ttk
 import os, sys, subprocess, getpass, logging
 
 
-logging.basicConfig(filename='errorlog.log', level=logging.ERROR, force=True, format='%(asctime)s %(levelname)s %(name)s %(message)s')
+if not os.path.exists(os.getenv('LOCALAPPDATA') + '\\Programs\\YouTube Downloader\\errorlog.log'):
+    os.makedirs(os.getenv('LOCALAPPDATA') + '\\Programs\\YouTube Downloader\\')
+logging.basicConfig(filename=os.getenv('LOCALAPPDATA') + '\\Programs\\YouTube Downloader\\errorlog.log', level=logging.ERROR, force=True, format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
 
 def resource_path(relative_path):
